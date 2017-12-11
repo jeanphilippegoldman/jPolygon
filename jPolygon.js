@@ -116,6 +116,10 @@ function check_intersect(x,y){
 }
 
 function press(event){
+  if(complete){
+      alert('Rectangle/Polygon already created');
+      return false;
+  }
   var action = document.getElementById('tool').value;
   if (action=="polygon")
     point_it(event)
@@ -125,6 +129,7 @@ function press(event){
 
 function release() {
   rectangle.started=false;
+  complete = true;
 }
 
 function point_rect(event){
@@ -150,10 +155,6 @@ function move(event){
 }
 
 function point_it(event) {
-    if(complete){
-        alert('Polygon already created');
-        return false;
-    }
     var rect, x, y;
 
     if(event.ctrlKey || event.which === 3 || event.button === 2){
