@@ -6,6 +6,7 @@
    License: MIT License
 */
 
+var rectangle = new Object();
 var perimeter = new Array();
 var complete = false;
 var canvas = document.getElementById("jPolygon");
@@ -50,6 +51,7 @@ function clear_canvas(){
     complete = false;
     document.getElementById('coordinates').value = '';
     start();
+    rectangle.started = false
 }
 
 function draw(end){
@@ -113,6 +115,40 @@ function check_intersect(x,y){
     return false;
 }
 
+function press(event){
+  var action = document.getElementById('tool').value;
+  if (action=="polygon")
+    point_it(event)
+  else if (action=="rect")
+    point_rect(event)
+}
+
+function release() {
+  rectangle.started=false;
+}
+
+function point_rect(event){
+  rectangle.started=true;
+  rectangle.x0=event.offsetX
+  rectangle.y0=event.offsetY
+}
+
+function move(event){
+  if (!rectangle.started) {
+    return;
+  }
+
+  rectangle.x = Math.min(event.offsetX,	rectangle.x0),
+  rectangle.y = Math.min(event.offsetY,	rectangle.y0),
+  rectangle.w = Math.abs(event.offsetX - rectangle.x0),
+  rectangle.h = Math.abs(event.offsetY - rectangle.y0);
+
+  if (!rectangle.w || !rectangle.h) {
+    return;
+  }
+  start(true)
+}
+
 function point_it(event) {
     if(complete){
         alert('Polygon already created');
@@ -133,7 +169,7 @@ function point_it(event) {
         }
         draw(true);
         alert('Polygon closed');
-	event.preventDefault();
+	      event.preventDefault();
         return false;
     } else {
         rect = canvas.getBoundingClientRect();
@@ -153,15 +189,31 @@ function point_it(event) {
     }
 }
 
+function draw_rect(){
+  ctx.strokeRect(rectangle.x,rectangle.y, rectangle.w, rectangle.h);
+  document.getElementById('coordinates').value = JSON.stringify(rectangle);
+  point(rectangle.x, rectangle.y);
+  point(rectangle.x+rectangle.w, rectangle.y);
+  point(rectangle.x, rectangle.y+rectangle.h);
+  point(rectangle.x+rectangle.w, rectangle.y+rectangle.h);
+
+
+}
 function start(with_draw) {
     var img = new Image();
     img.src = canvas.getAttribute('data-imgsrc');
 
     img.onload = function(){
+        document.getElementById('jPolygon').width=600;
+        document.getElementById('jPolygon').height=this.height/this.width*600;
         ctx = canvas.getContext("2d");
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         if(with_draw == true){
-            draw(false);
+          var action = document.getElementById('tool').value;
+          if (action=="polygon")
+            draw(false)
+          else if (action=="rect")
+            draw_rect()
         }
     }
 }

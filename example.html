@@ -9,7 +9,7 @@
     </head>
     <body onload="clear_canvas()">
         <div style="float:left">
-            <canvas id="jPolygon" width="640" height="480" style="cursor:crosshair" data-imgsrc="image.jpg" onmousedown="point_it(event)" oncontextmenu="return false;">
+            <canvas id="jPolygon" style="cursor:crosshair" data-imgsrc="anvers_30.jpg" onmousedown="press(event)" onmousemove="move(event)" onmouseup="release()" oncontextmenu="return false;">
                 Your browser does not support the HTML5 canvas tag.
             </canvas>
         </div>
@@ -17,6 +17,7 @@
             <div>
                 <button onclick="undo()">Undo</button>
                 <button onclick="clear_canvas()">Clear</button>
+                <select id="tool"><option value="rect">Rectangle</option><option value="polygon">Polygon</option></select>
                 <p>Press <strong>Left Click</strong> to draw a point.</p>
                 <p><strong>CTRL+Click</strong> or <strong>Right Click</strong> to close the polygon.</p>
             </div>
