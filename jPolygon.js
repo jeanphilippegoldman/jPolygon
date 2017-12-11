@@ -173,7 +173,7 @@ function point_it(event) {
             return false;
         }
         draw(perimeter, true);
-        alert('Polygon closed');
+        //alert('Polygon closed');
 	      event.preventDefault();
         return false;
     } else {
@@ -194,8 +194,17 @@ function point_it(event) {
     }
 }
 
-function draw_rect(rectangle){
-  ctx.strokeRect(rectangle.x,rectangle.y, rectangle.w, rectangle.h);
+function draw_rect(rectangle, fill){
+  if (fill) {
+    ctx.strokeStyle = 'blue';
+    ctx.strokeRect(rectangle.x,rectangle.y, rectangle.w, rectangle.h);
+    ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
+    ctx.fillRect(rectangle.x,rectangle.y, rectangle.w, rectangle.h);
+  } else {
+        ctx.strokeStyle = "white";
+        ctx.strokeRect(rectangle.x,rectangle.y, rectangle.w, rectangle.h);
+      }
+
   document.getElementById('coordinates').value = JSON.stringify(rectangle);
   point(rectangle.x, rectangle.y);
   point(rectangle.x+rectangle.w, rectangle.y);
@@ -219,7 +228,7 @@ function start(with_draw) {
           if (action=="polygon")
             draw(perimeter, false)
           else if (action=="rect")
-            draw_rect(rectangle)
+            draw_rect(rectangle, false)
         }
     }
     document.getElementById('frames').value = JSON.stringify(frames.length);
@@ -242,7 +251,7 @@ function validate_frame(){
   function draw_prev_frames(){
   for (f in frames) {
     if (frames[f].x0 != undefined)
-      draw_rect(frames[f])
+      draw_rect(frames[f],true)
     else
       draw(frames[f], true)
   }
