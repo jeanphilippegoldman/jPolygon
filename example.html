@@ -26,7 +26,14 @@
                 <textarea id="coordinates" disabled="disabled" style="width:300px; height:200px;"></textarea>
             </div>
             <div>
-                <p>Go to <a href="http://www.matteomattei.com/projects/jpolygon">project website</a> - <a href="https://github.com/matteomattei/jPolygon">source code</a></p>
+              <p><strong>Frames completed:</strong></p>
+              <textarea id="frames" disabled="disabled" style="width:300px; height:20px;"></textarea><br>
+              <button onclick="validate_frame()">Validate</button>
+              <button onclick="pop_frame()">Pop</button>
+              <button onclick="clear_all_frame()">Clear all</button>
+            </div>
+            <div>
+                <a href="https://github.com/jeanphilippegoldman/jPolygon">source code</a></p>
             </div>
         </div>
         <script type="text/javascript" src="jPolygon.js"></script>

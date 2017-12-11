@@ -9,8 +9,10 @@
 var rectangle = new Object();
 var perimeter = new Array();
 var complete = false;
+var started = false;
 var canvas = document.getElementById("jPolygon");
 var ctx;
+var frames = [];
 
 function line_intersects(p0, p1, p2, p3) {
     var s1_x, s1_y, s2_x, s2_y;
@@ -51,10 +53,9 @@ function clear_canvas(){
     complete = false;
     document.getElementById('coordinates').value = '';
     start();
-    rectangle.started = false
 }
 
-function draw(end){
+function draw(perimeter, end){
     ctx.lineWidth = 1;
     ctx.strokeStyle = "white";
     ctx.lineCap = "square";
@@ -80,11 +81,11 @@ function draw(end){
     ctx.stroke();
 
     // print coordinates
-    if(perimeter.length == 0){
-        document.getElementById('coordinates').value = '';
-    } else {
-        document.getElementById('coordinates').value = JSON.stringify(perimeter);
-    }
+    //if(perimeter.length == 0){
+    //    document.getElementById('coordinates').value = '';
+    //} else {
+    document.getElementById('coordinates').value = JSON.stringify(perimeter);
+    //}
 }
 
 function check_intersect(x,y){
@@ -117,7 +118,7 @@ function check_intersect(x,y){
 
 function press(event){
   if(complete){
-      alert('Rectangle/Polygon already created');
+      alert('Rectangle/Polygon already created. Undo/clear or validate first');
       return false;
   }
   var action = document.getElementById('tool').value;
@@ -128,18 +129,21 @@ function press(event){
 }
 
 function release() {
-  rectangle.started=false;
-  complete = true;
+  if (document.getElementById('tool').value=="rect")
+    if (rectangle.w && rectangle.h) {
+      started=false;
+      complete = true;
+    }
 }
 
 function point_rect(event){
-  rectangle.started=true;
+  started=true;
   rectangle.x0=event.offsetX
   rectangle.y0=event.offsetY
 }
 
 function move(event){
-  if (!rectangle.started) {
+  if (!started) {
     return;
   }
 
@@ -168,7 +172,7 @@ function point_it(event) {
             alert('The line you are drowing intersect another line');
             return false;
         }
-        draw(true);
+        draw(perimeter, true);
         alert('Polygon closed');
 	      event.preventDefault();
         return false;
@@ -185,12 +189,12 @@ function point_it(event) {
             return false;
         }
         perimeter.push({'x':x,'y':y});
-        draw(false);
+        draw(perimeter, false);
         return false;
     }
 }
 
-function draw_rect(){
+function draw_rect(rectangle){
   ctx.strokeRect(rectangle.x,rectangle.y, rectangle.w, rectangle.h);
   document.getElementById('coordinates').value = JSON.stringify(rectangle);
   point(rectangle.x, rectangle.y);
@@ -211,10 +215,39 @@ function start(with_draw) {
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         if(with_draw == true){
           var action = document.getElementById('tool').value;
+          draw_prev_frames()
           if (action=="polygon")
-            draw(false)
+            draw(perimeter, false)
           else if (action=="rect")
-            draw_rect()
+            draw_rect(rectangle)
         }
     }
+    document.getElementById('frames').value = JSON.stringify(frames.length);
 }
+
+function validate_frame(){
+  var action = document.getElementById('tool').value;
+  if (action=="polygon") {
+    frames.push(perimeter)
+    perimeter = new Array();
+  } else if (action=="rect") {
+    frames.push(rectangle)
+    rectangle = new Object();
+  }
+  complete = false;
+  document.getElementById('coordinates').value = '';
+  start(true);
+}
+
+  function draw_prev_frames(){
+  for (f in frames) {
+    if (frames[f].x0 != undefined)
+      draw_rect(frames[f])
+    else
+      draw(frames[f], true)
+  }
+
+}
+
+function pop_frame(){ frames.pop();start(true)}
+function clear_all_frame(){ frames=[];start(true)}
